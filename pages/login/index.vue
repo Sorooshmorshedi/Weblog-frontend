@@ -1,67 +1,78 @@
 <template>
   <v-card
-    class="mx-auto"
-    max-width="500"
+    class="indigo lighten-1 overflow-hidden"
+    dark
+    height="1000px"
   >
-
     <v-toolbar
-      color=#FF8552
-      dark
+      flat
+      color=#23228c
+
     >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-      <v-toolbar-title>Discover</v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
+      <v-icon>mdi-account</v-icon>
+      <v-toolbar-title class="font-weight-light">
+        Log in
+      </v-toolbar-title>
     </v-toolbar>
 
-    <v-container fluid>
-      <v-row dense>
-        <v-col
-          v-for="card in cards"
-          :key="card.title"
-          :cols="card.flex"
+    <v-card-text>
+      <v-text-field
+        v-model = "username"
+        color="white"
+        label="username"
+      ></v-text-field>
+    </v-card-text>
+    <v-card-text>
+      <v-text-field
+        v-model = "password"
+        color="white"
+        type="password"
+        label="Password"
+      ></v-text-field>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <NuxtLink to="/sign">
+        <v-btn
+          class="ma-2"
+          color="blue"
         >
-          <v-card>
-            <v-img
-              :src="card.src"
-              class="white--text align-end"
-              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              height="200px"
-            >
-              <v-card-title v-text="card.title"></v-card-title>
-            </v-img>
+          dont have account?
+        </v-btn>
+      </NuxtLink>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
-              <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
-
-              <v-btn icon>
-                <v-icon>mdi-bookmark</v-icon>
-              </v-btn>
-
-              <v-btn icon>
-                <v-icon>mdi-share-variant</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+      <v-btn
+        color=#59981A
+        @click="Login"
+      >Log in
+      </v-btn>
+    </v-card-actions>
   </v-card>
+
 </template>
 
 
 <script>
 export default {
-  name: 'IndexPage'
+  name: 'LoginPage',
+  data () {
+    return {
+      username: '',
+      password: '',
+    }
+  },
+  methods: {
+    Login() {
+      this.$axios.$get('http://127.0.0.1:8000/api/myauth/?username='+this.username+'&pass='+this.password)
+        .then(response => {
+          console.log(response)
+          window.alert('login success')
+          window.location.href = "http://127.0.0.1:3000/"+response.token+"?acid="+response.id;
+
+        })
+    },
+  }
+
 
 }
 </script>

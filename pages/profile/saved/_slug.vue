@@ -1,181 +1,339 @@
 <template>
   <div>
-    <v-card
-      class="mx-auto"
-      max-width="800"
-    >
-      <v-card
-        dark
-        flat
-      >
-        <nuxt-link to="/post">
-          <v-btn
-            absolute
-            bottom
-            color=#86b300
-            right
-            fab
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </nuxt-link>
-        <v-card-title class="pa-2 #86b300 ">
-          <v-col>
-            <nuxt-link to="/setprofile">
+    <v-container fluid v-for="pin in items">
+
+      <v-row justify="center">
+
+        <v-col
+
+          :key="pin.id"
+          :cols=6
+        >
+
+          <v-card class="purple lighten-3 ">
+            <h2>
+              <v-avatar
+                color="purple"
+                size="35"
+              >
+                <v-img
+                  lazy-src="https://images.assetsdelivery.com/compings_v2/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016.jpg"
+                  :src=pin.pro_pic
+                  class="white--text align-center ma-4"
+                  height=auto
+                  width=auto
+                ></v-img>
+              </v-avatar>
+              {{ pin.user_name }}
+              <v-btn @click="unsave(pin)" class="ml-16"><v-icon>mdi-archive-remove-outline</v-icon></v-btn>
+
+            </h2>
+            <v-icon class="ma-1 ">
+              mdi-eye-check-outline
+            </v-icon>
+            {{ pin.seens_count }}
+
+            <v-img
+              lazy-src="https://images.assetsdelivery.com/compings_v2/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016.jpg"
+
+              :src=pin.image
+              class="white--text align-center"
+              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              height="auto"
+              width="auto"
+            >
+            </v-img>
+            <h2>{{ pin.title }}</h2>
+            <h3>{{ pin.about_text }}</h3>
+            <p>{{ pin.alt_text }}</p>
+
+            <v-card-actions>
+
+              <v-text-field
+                v-model:light="cm"
+                placeholder="comment"
+                filled
+                rounded
+                dense
+              ></v-text-field>
+
+
               <v-btn
-                depressed
+                @click="cmPin(pin)"
+                class="mx-2"
+                fab
+                dark
+                small
+                color="primary"
+              >
+                {{ pin.comments_count }}
+
+                <v-icon dark>
+                  mdi-send
+                </v-icon>
+              </v-btn>
+
+              <v-btn
+                @click="likePin(pin)"
+                class="mx-2"
+                fab
+                dark
+                small
+                color="green"
+              >
+                {{ pin.likes_count }}
+
+                <v-icon dark>
+                  mdi-thumb-up
+                </v-icon>
+              </v-btn>
+
+              <v-btn
+                @click="disslikePin(pin)"
+                class="mx-2"
+                fab
+                dark
+                small
                 color="red"
               >
-                edit profile
+                {{ pin.likes_count }}
+
+                <v-icon dark>
+                  mdi-thumb-down
+                </v-icon>
               </v-btn>
-            </nuxt-link>
-          </v-col>
-          <h3 class="text-h6 font-weight-light text-center grow">
-            Profile          </h3>
-          <v-avatar>
-            <v-img src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light"></v-img>
-          </v-avatar>
-        </v-card-title>
-        <v-img
-          src="https://cdn.vuetifyjs.com/images/cards/forest.jpg"
-          gradient="to top, rgba(0,0,0,.44), rgba(0,0,0,.44)"
-        >
 
-        </v-img>
-      </v-card>
-      <v-card-text class="py-0">
-        <v-timeline
-          align-top
-          dense
-        >
-          <v-timeline-item
-            color="yellow"
-            small
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>info</strong>
-              </v-col>
-              <v-col>
-                <strong>{{ items.first_name }} {{ items.last_name }}</strong>
-                <div class="text-caption">
-                  {{ items.country }}
-                </div>
-                <div class="text-caption">
-                  {{ items.short_bio }}
-                </div>
 
-              </v-col>
-            </v-row>
-          </v-timeline-item>
+              <v-btn
+                @click="savePin(pin)"
+                class="mx-2"
+                fab
+                dark
+                small
+                color="purple"
+              >
+                <v-icon dark>
+                  mdi-archive
+                </v-icon>
+              </v-btn>
 
-          <v-timeline-item
-            color="green"
-            small
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>account</strong>
-              </v-col>
-              <v-col>
-                <strong>{{ items.user_name }}</strong>
-                <div class="text-caption">
-                  {{ items.website }}
-                </div>
-                <div class="text-caption">
-                  {{ items.email }}
-                </div>
+              <v-spacer></v-spacer>
+              <nuxt-link
+                :to="{ path: '/post/likes/' + $route.params.slug + '/?acid=' + $route.query.acid + '&' + 'pin=' + pin.id}">
+                <v-btn
+                  class="mx-2"
+                  dark
+                  small
+                  color="purple"
+                > see Likes
+                </v-btn>
+              </nuxt-link>
+              <nuxt-link
+                :to="{ path: '/post/comments/' + $route.params.slug + '/?acid=' + $route.query.acid + '&' + 'pin=' + pin.id}">
+                <v-btn
+                  class="mx-2"
+                  dark
+                  small
+                  color="purple"
+                >see Comments
+                </v-btn>
+              </nuxt-link>
 
-              </v-col>
-            </v-row>
-          </v-timeline-item>
 
-          <v-timeline-item
-            color="red"
-            small
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>follow</strong>
-              </v-col>
-              <v-col>
-                <strong>Follower</strong>
-                <div class="text-caption">
-                  {{ items.followers }}
-                </div>
-                <strong>Following</strong>
-                <div class="text-caption">
-                  {{ items.following }}
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
-                </div>
-
-              </v-col>
-            </v-row>
-          </v-timeline-item>
-
-          <v-timeline-item
-            color="blue"
-            medium
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>pins</strong>
-              </v-col>
-              <v-col>
-                <nuxt-link to="/">
-                  <v-btn
-                    depressed
-                    color="primary"
-                  >
-                    see pins
-                  </v-btn>
-                </nuxt-link>
-              </v-col>
-
-            </v-row>
-          </v-timeline-item>
-        </v-timeline>
-      </v-card-text>
     </v-card>
+
+
   </div>
 </template>
 
 
 <script>
 export default {
-  data () {
+  async asyncData({ $axios, params }) {
+    const items = await $axios.$get("http://127.0.0.1:8000/api/account/saved/"+params.slug)
+    console.log(items)
+    return { items }
+  },
+  data() {
     return {
+      newpins: '',
+      oldpins: '',
+      repcm: '',
+      cm: '',
+      slug: this.$route.params.slug,
+      comments: null,
+      likes: null,
+      myid: this.$route.query.acid,
+      replays: null,
 
     }
   },
+  beforeMount() {
+    this.$axios.$get('http://127.0.0.1:8000/api/newpin/' + this.slug)
+      .then(response => {
+        console.log(response)
+        console.log('ok')
+        this.newpins = response
+      })
+    this.$axios.$get('http://127.0.0.1:8000/api/oldpin/' + this.slug)
+      .then(response => {
+        console.log(response)
+        console.log('ok')
+        this.oldpins = response
+      })
 
+  },
   mounted() {
-    console.log(this.$route.params.slug);
+    this.$axios.$get('http://127.0.0.1:8000/api/seened/' + this.slug)
   },
 
-  async asyncData({ $axios }) {
-    const items = await $axios.$get(`http://127.0.0.1:8000/api/account/7`)
-    console.log(items);
 
-    return { items }
+  methods: {
+    seen(pin) {
+      this.$axios.$post('http://127.0.0.1:8000/api/seen', {
+        account: parseInt(this.$route.query.acid),
+        pin: pin.id,
+      })
+        .then(response => {
+          console.log(response)
+          console.log('ok')
+        })
+    },
+
+    savePin(pin) {
+      this.$axios.$post('http://127.0.0.1:8000/api/saved/', {
+        account: this.$route.query.acid,
+        pin: pin.id,
+      })
+        .then(response => {
+          console.log(response)
+          window.alert('pin saved')
+        }).catch(response => {
+        window.alert('you cant save a post twise!')
+      })
+    },
+    likePin(pin) {
+      this.$axios.$post('http://127.0.0.1:8000/api/like/', {
+        account: this.$route.query.acid,
+        pin: pin.id,
+      })
+        .then(response => {
+          console.log(response)
+          window.alert('pin like')
+        }).catch(response => {
+        window.alert('you cant like a post twise!')
+      })
+    },
+    disslikePin(pin) {
+      this.$axios.$delete('http://127.0.0.1:8000/api/dislike/' + pin.id + '/' + this.$route.query.acid + '/')
+        .then(response => {
+          console.log(response)
+          window.alert('pin unlike')
+        }).catch(response => {
+        window.alert('you dont like this pin!')
+      })
+    },
+
+    seecomments(pin) {
+      this.$axios.$get('http://127.0.0.1:8000/api/pin/comments' + pin.id)
+        .then(response => {
+          console.log(response)
+          this.comments = response
+        })
+    },
+
+    deleteComment(comment) {
+      this.$axios.$delete('http://127.0.0.1:8000/api/comment/' + comment.id)
+        .then(response => {
+          console.log(response)
+          window.alert('comment deleted')
+          window.location.href = "http://127.0.0.1:3000/" + this.slug + "?acid=" + this.myid;
+
+        })
+    },
+
+    seelikes(pin) {
+      this.$axios.$get('http://127.0.0.1:8000/api/pin/likes/' + pin.id)
+        .then(response => {
+          console.log(response)
+          this.likes = response
+        })
+    },
+    seerep(comment) {
+      this.$axios.$get('http://127.0.0.1:8000/api/comment/replay/' + comment.id)
+        .then(response => {
+          console.log(response)
+          this.replays = response
+        })
+    },
+
+
+    cmPin(pin) {
+      this.$axios.$post('http://127.0.0.1:8000/api/comment/', {
+        account: this.$route.query.acid,
+        pin: pin.id,
+        comment_text: this.cm,
+      })
+        .then(response => {
+          console.log(response)
+          window.alert('comment sent')
+        }).catch(response => {
+        window.alert('you cant send blank comment')
+      })
+    },
+    replayCm(comment) {
+      this.$axios.$post('http://127.0.0.1:8000/api/comment/', {
+        account: this.$route.query.acid,
+        reply: comment.id,
+      })
+        .then(response => {
+          console.log(this.replays)
+          window.alert('comment sent')
+        }).catch(response => {
+        window.alert('you cant send blank comment')
+      })
+    },
+    unsave(pin) {
+      this.$axios.$delete('http://127.0.0.1:8000/api/unsave/' + pin.id + '/' + this.myid)
+        .then(response => {
+          console.log(response)
+          window.alert('pin unsaved')
+          window.location.href = "http://127.0.0.1:3000/profile/saved/" + this.slug + "?acid=" + this.myid;
+        }).catch(response => {
+        window.alert('you already saved this post!!')
+      })
+    }
+
   }
 }
 
-
 </script>
 <style scoped>
-h2{
+h2 {
   padding: 10px;
-  color: whitesmoke;
+  color: midnightblue;
 }
-h3{
+
+h4 {
   padding: 10px;
   color: whitesmoke;
 }
 
-p{
+h3 {
   padding: 20px;
-  color: darkslategrey;
+  color: #b8003d;
+}
+
+p {
+  padding: 20px;
+  color: darkslateblue;
 }
 
 </style>
+

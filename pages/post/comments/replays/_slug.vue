@@ -19,7 +19,13 @@
         >
           <h3>
             <v-avatar color="red">
-              <v-icon>mdi-text</v-icon>
+              <v-img
+                lazy-src="https://images.assetsdelivery.com/compings_v2/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016.jpg"
+                :src=comment.pro_pic
+                class="white--text align-center"
+                height=auto
+                width=auto
+              ></v-img>
             </v-avatar>
             comment by
             {{ comment.user_name }}
@@ -37,25 +43,25 @@
               <v-icon small>mdi-trash-can-outline</v-icon>
             </v-btn>
             <v-dialog
-              v-model="dialog"
+              v-model="dialog1"
               persistent
               max-width="600px"
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   v-if="id == comment.account"
+                  @click="setcmid(comment)"
                   elevation="1"
-                  class="ml-2 primary"
+                  class="ml-2 red"
                   right
                   icon
                   dark
                   small
                   text
-
                   v-bind="attrs"
                   v-on="on"
                 >
-                  <v-icon small>mdi-pencil-outline</v-icon>
+                  <v-icon small>mdi-pencil</v-icon>
                 </v-btn>
               </template>
               <v-card>
@@ -71,9 +77,9 @@
                         md="4"
                       >
                         <v-text-field
+                          v-model="edited"
                           label="comment"
                           required
-                          v-model="rep"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -85,14 +91,14 @@
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog = false"
+                    @click="dialog1 = false"
                   >
                     Close
                   </v-btn>
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="editComment(comment)"
+                    @click="editComment(comment) , dialog1=false"
                   >
                     Save
                   </v-btn>
@@ -100,28 +106,80 @@
               </v-card>
             </v-dialog>
 
-
           </h3>
           <p>{{ comment.comment_text }}</p>
-          <v-btn
-            text
-            elevation="1"
-            class="ml-15 "
-            dark
-            small
+          <v-dialog
+            v-model="dialog"
+            persistent
+            max-width="600px"
           >
-           replay
-          </v-btn>
-          <v-btn
-            text
-            elevation="1"
-            class="ml-2 "
-            dark
-            small
-          >
-            see replays
-          </v-btn>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                @click="setcmid(comment)"
+                text
+                elevation="1"
+                class="ml-2 "
+                dark
+                small
+                v-bind="attrs"
+                v-on="on"
+              >
+                replay
+              </v-btn>
 
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="text-h5">replay</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="rep"
+                        label="replay comment"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+                <small>*comment is required field</small>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="dialog = false"
+                >
+                  Close
+                </v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="replayCm(comment)"
+                >
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <nuxt-link :to="{ path: '/post/comments/replays/' + $route.params.slug + '/?acid=' + $route.query.acid + '&com=' + comment.id}">
+            <v-btn
+              text
+              elevation="1"
+              class="ml-2 "
+              dark
+              small
+            >
+              see replays
+            </v-btn>
+          </nuxt-link>
 
         </v-sheet>
 
@@ -134,14 +192,21 @@
 </template>
 
 
+
+
 <script>
 export default {
   data() {
     return {
+      dialog1:'',
+      comment:'',
+      cmid: '',
       slug: this.$route.params.slug,
       id: this.$route.query.acid,
+      com: this.$route.query.com,
       dialog: false,
-      rep:''
+      rep: '',
+      edited:'',
 
     }
   },
@@ -150,24 +215,28 @@ export default {
     console.log(this.id)
   },
 
-  async asyncData({$axios, params}) {
-    const comments = await $axios.$get('http://127.0.0.1:8000/api/pin/comments/' + params.slug)
+  async asyncData({$axios, params, query}) {
+    const comments = await $axios.$get('http://127.0.0.1:8000/api/comment/replay/' + query.com)
     console.log(comments);
     console.log('ok');
-
     return {comments}
   },
   methods: {
+    setcmid(comment) {
+      this.cmid = comment.id;
+      console.log(this.cmid)
+    },
+
     editComment(comment) {
-      this.$axios.put('http://127.0.0.1:8000/api/comment/' + comment.id + '/', {
-        account: comment.account,
+      this.$axios.put('http://127.0.0.1:8000/api/comment/' + this.cmid + '/', {
+        account: this.id,
         pin: comment.pin,
-        comment_text: this.rep,
+        comment_text: this.edited,
       })
         .then(response => {
           console.log(response)
           window.alert('comment edited')
-          window.location.href = "http://127.0.0.1:3000/post/comments/" + this.slug + "?acid=" + this.id;
+          window.location.href = "http://127.0.0.1:3000/post/comments/replays/" + this.slug + "?acid=" + this.id  +'&com=' + this.com;
 
         })
     },
@@ -175,29 +244,23 @@ export default {
     deleteComment(comment) {
       this.$axios.$delete('http://127.0.0.1:8000/api/comment/' + comment.id)
         .then(response => {
+          console.log(comment.id)
           console.log(response)
           window.alert('comment deleted')
-          window.location.href = "http://127.0.0.1:3000/post/comments/" + this.slug + "?acid=" + this.id;
+          window.location.href = "http://127.0.0.1:3000/post/comments/replays/" + this.slug + "?acid=" + this.id  +'&com=' + this.com;
 
-        })
-    },
-
-    seerep(comment) {
-      this.$axios.$get('http://127.0.0.1:8000/api/comment/replay/' + comment.id)
-        .then(response => {
-          console.log(response)
-          this.replays = response
         })
     },
 
     replayCm(comment) {
       this.$axios.$post('http://127.0.0.1:8000/api/comment/', {
         account: this.$route.query.acid,
-        reply: comment.id,
+        reply: this.cmid,
+        comment_text: this.rep
       })
         .then(response => {
           console.log(this.replays)
-          window.alert('comment sent')
+          window.alert('replay sent')
         }).catch(response => {
         window.alert('you cant send blank comment')
       })
@@ -205,8 +268,6 @@ export default {
   }
 
 }
-
-
 
 
 </script>
@@ -223,3 +284,6 @@ p {
 
 
 </style>
+
+
+

@@ -1,187 +1,55 @@
 <template>
   <div>
-
-    <v-card
-      class="mx-auto"
-      max-width="800"
-    >
-      <v-card
-        dark
-        flat
+    <v-row class="mt-md-8">
+      <v-col
+        cols="12"
+        md="4"
+        class="d-flex order-1 order-md-0 flex-row flex-md-column justify-space-around justify-md-center align-right pr-8"
       >
-        <nuxt-link :to="{ path: '/post/' + this.slug, query: { acid: items[0].id }} ">
-          <v-btn
-            absolute
-            bottom
-            color=#86b300
-            right
-            fab
+
+      </v-col>
+      <v-col cols="6" md="4" class="pt-5">
+        <v-card class="elevation-3" color=#2e136e height="auto">
+          <v-img
+            contain
+            src="https://digitalsynopsis.com/wp-content/uploads/2019/04/beautiful-gradient-logo-designs-21.jpg"
           >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </nuxt-link>
-        <v-card-title class="pa-2 #86b300 ">
-          <v-col>
-            <nuxt-link :to="{ path: '/setprofile/' + this.slug}">
-              <v-btn
-                depressed
-                color="red"
-              >
-                Edit profile
-              </v-btn>
-            </nuxt-link>
-            <NuxtLink :to="{ path: '/' + this.slug +'?acid='+ items[0].id}">
-              <v-btn
-                class="ma-2"
-                color="green"
-              >
-                back to home
-              </v-btn>
-            </NuxtLink>
-          </v-col>
-          <h2>{{ items[0].first_name }} {{ items[0].last_name }}</h2>
-          <v-avatar
-            color="green"
-            size="35"
+            <h1 class="imagetitle">followers</h1></v-img>
+
+          </v-img>
+          <v-card class='pa-1 ma-1'
+                  v-for="follower in followers"
+                  color=#5325c2
+
           >
-            <v-img
-              lazy-src="https://images.assetsdelivery.com/compings_v2/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016.jpg"
 
-              :src= items[0].profile_picture
-              class="white--text align-center"
-              gradient="to top, rgba(0,0,0,.44), rgba(0,0,0,.44)"
-              height=auto
-              width=auto
-            >
-            </v-img>
-          </v-avatar>
-        </v-card-title>
-        <v-img
-          lazy-src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfYEG2AZWFMEjpExDUQUtJXaX175rgJi-5Ji-kSVO_wTHlBNr1AGAtaGz4P7j0qarq_Gg&usqp=CAUjpg"
-          :src= items[0].profile_picture
-          class="white--text align-center"
-          gradient="to top, rgba(0,0,0,.44), rgba(0,0,0,.44)"
-          height=auto
-          width=auto
-        >
-        </v-img>
-      </v-card>
-      <v-card-text class="py-0">
-        <v-timeline
-          align-top
-          dense
-        >
-          <v-timeline-item
-            color="yellow"
-            small
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>info</strong>
-              </v-col>
-              <v-col>
-                <strong>{{ items[0].first_name }} {{ items[0].last_name }}</strong>
-                <div class="text-caption">
-                  {{ items[0].country }}
-                </div>
-                <div class="text-caption">
-                  {{ items[0].Pronouns }}
-                </div>
+            <h3>
+              <v-avatar color="#5c2134">
+                <v-img
+                  lazy-src="https://images.assetsdelivery.com/compings_v2/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016.jpg"
+                  :src=follower.follower_pic
+                  class="white--text align-center"
+                  height=auto
+                  width=auto
+                ></v-img>
+              </v-avatar>
+              followed by {{ follower.follower_user }}
+            </h3>
+          </v-card>
 
-                <div class="text-caption">
-                  {{ items[0].short_bio }}
-                </div>
+        </v-card>
+      </v-col>
+    </v-row>
 
-              </v-col>
-            </v-row>
-          </v-timeline-item>
-
-          <v-timeline-item
-            color="green"
-            small
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>account</strong>
-              </v-col>
-              <v-col>
-                <strong>{{ items[0].user_name }}</strong>
-                <div class="text-caption">
-                  {{ items[0].website }}
-                </div>
-                <div class="text-caption">
-                  {{ items[0].email }}
-                </div>
-
-              </v-col>
-            </v-row>
-          </v-timeline-item>
-
-          <v-timeline-item
-            color="red"
-            small
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>follow</strong>
-              </v-col>
-              <v-col>
-                <strong>Follower</strong>
-                <div class="text-caption">
-                  {{ items[0].followers }}
-                </div>
-                <strong>Following</strong>
-                <div class="text-caption">
-                  {{ items[0].following }}
-
-                </div>
-
-              </v-col>
-            </v-row>
-          </v-timeline-item>
-
-          <v-timeline-item
-            color="blue"
-            medium
-          >
-            <v-row class="pt-1">
-              <v-col cols="3">
-                <strong>pins</strong>
-              </v-col>
-              <v-col>
-                <nuxt-link :to="{ path: '/profile/pins/' + this.slug +'?acid='+ items[0].id}">
-                  <v-btn
-                    depressed
-                    color="primary"
-                  >
-                    see pins
-                  </v-btn>
-                </nuxt-link>
-                <nuxt-link :to="{ path: '/profile/saved/' + this.slug +'?acid='+ items[0].id}">
-                  <v-btn
-                    depressed
-                    color="purple"
-                  >
-                    saved pins
-                  </v-btn>
-                </nuxt-link>
-
-              </v-col>
-
-            </v-row>
-          </v-timeline-item>
-        </v-timeline>
-      </v-card-text>
-    </v-card>
   </div>
 </template>
 
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      slug : this.$route.params.slug
+      slug: this.$route.params.slug
     }
   },
 
@@ -191,28 +59,33 @@ export default {
 
   },
 
-  async asyncData({ $axios, params }) {
-    const items = await $axios.$get('http://127.0.0.1:8000/api/account/'+params.slug)
-    console.log(items);
-    return { items }
+  async asyncData({$axios, params}) {
+    const followers = await $axios.$get('http://127.0.0.1:8000/api/profile/follower/' + params.slug)
+    console.log(followers);
+    return {followers}
   }
 }
 
 
 </script>
 <style scoped>
-h2{
-  padding: 10px;
-  color: whitesmoke;
-}
-h3{
+h2 {
   padding: 10px;
   color: whitesmoke;
 }
 
-p{
+h3 {
+  padding: 10px 40px 10px;
+  color: whitesmoke;
+}
+
+p {
   padding: 20px;
   color: darkslategrey;
 }
+h1.imagetitle {
+  color: palegreen;
+  padding: 10px;
 
+}
 </style>

@@ -1,5 +1,27 @@
 <template>
   <div>
+    <div class="search">
+      <v-toolbar
+        color=#e2baff
+        dense
+        rounded
+        floating
+      >
+        <v-text-field
+          v-model="searched"
+          hide-details
+          prepend-icon="mdi-account"
+          single-line
+        ></v-text-field>
+        <NuxtLink
+          :to="{ path: '/accounts/search/' + this.slug + '/?acid=' + $route.query.acid + '&' + 'search=' + this.searched}">
+          <v-btn icon @click="searchacc()">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </NuxtLink>
+      </v-toolbar>
+    </div>
+
     <v-card
       v-for="item in items"
       md=4
@@ -158,21 +180,27 @@ export default {
   data() {
     return {
       slug: this.$route.params.slug,
-      id : this.$route.query.acid
+      id : this.$route.query.acid,
+      search : this.$route.query.search,
+      searched: '',
+      items:[],
     }
   },
+  beforeMount() {
+    this.$axios.$get('http://127.0.0.1:8000/api/search/' + this.search)
+      .then(response => {
+        console.log(response)
+        console.log('ok')
+        this.items = response
+      })
 
+},
   mounted() {
     console.log(this.slug);
     console.log(this.$route);
 
   },
 
-  async asyncData({$axios, params}) {
-    const items = await $axios.$get('http://127.0.0.1:8000/api/account')
-    console.log(items);
-    return {items}
-  },
   methods: {
     followacc(item) {
       this.$axios.$post('http://127.0.0.1:8000/api/follow/', {
@@ -187,6 +215,10 @@ export default {
         window.alert('you already follow this account!!')
       })
     },
+    searchacc(item) {
+      window.location.href = "http://127.0.0.1:3000/accounts/search/" + this.slug + "/?acid=" + this.id + '&' + 'search=' + this.searched;
+    },
+
     unfollowacc(item) {
       this.$axios.delete('http://127.0.0.1:8000/api/unfollow/' +this.id + '/' + item.id)
         .then(response => {
@@ -207,4 +239,10 @@ h3{
   color: #d1155a;
   padding-top: 10px;
 }
+div.search {
+  padding: 10px;
+  margin: 10px;
+
+}
+
 </style>

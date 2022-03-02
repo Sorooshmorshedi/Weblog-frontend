@@ -1,12 +1,34 @@
 <template>
   <div>
+    <div class="search">
+      <v-toolbar
+        color=#e2baff
+        dense
+        rounded
+        floating
+      >
+        <v-text-field
+          v-model="searched"
+          hide-details
+          prepend-icon="mdi-account"
+          single-line
+        ></v-text-field>
+        <NuxtLink
+          :to="{ path: '/accounts/search/' + this.slug + '/?acid=' + $route.query.acid + '&' + 'search=' + this.searched}">
+          <v-btn icon>
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </NuxtLink>
+      </v-toolbar>
+    </div>
+
     <v-card
       v-for="item in items"
       md=4
       class="indigo lighten-3 mx-auto mt-3"
       max-width="800"
     >
-      <v-card-title class="blue darken-4 white--text" >
+      <v-card-title class="blue darken-4 white--text">
         <nuxt-link :to="{ path: '/profile/pins/' + item.token +'?acid='+ $route.query.acid}">
           <v-btn
             depressed
@@ -23,7 +45,7 @@
         >
           <v-img
             lazy-src="https://images.assetsdelivery.com/compings_v2/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016.jpg"
-            :src= item.profile_picture
+            :src=item.profile_picture
             class="white--text align-center"
             height=auto
             width=auto
@@ -33,13 +55,13 @@
       </v-card-title>
       <v-img
         lazy-src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfYEG2AZWFMEjpExDUQUtJXaX175rgJi-5Ji-kSVO_wTHlBNr1AGAtaGz4P7j0qarq_Gg&usqp=CAUjpg"
-        :src= item.profile_picture
+        :src=item.profile_picture
         class="white--text align-center"
         height=auto
         width=auto
       >
         <v-btn
-          class="mt-10 ml-15"
+          class="mt-10 ml-3"
           v-if="item.id != id"
           @click="followacc(item)"
           absolute
@@ -48,17 +70,6 @@
           fab
         >
           <v-icon>mdi-account-plus</v-icon>
-        </v-btn>
-        <v-btn
-          class="mt-10"
-          v-if="item.id != id"
-          top
-          @click="unfollowacc(item)"
-          absolute
-          color=red
-          fab
-        >
-          <v-icon>mdi-account-remove</v-icon>
         </v-btn>
       </v-img>
       <v-card-text class="py-0">
@@ -71,7 +82,7 @@
             small
           >
             <v-row class="pt-1">
-              <v-col cols="3" >
+              <v-col cols="3">
                 <strong>info</strong>
               </v-col>
               <v-col>
@@ -140,7 +151,7 @@
                       color="indigo darken-1"
                     >
                       {{ item.following }}
-                      </v-btn>
+                    </v-btn>
                   </nuxt-link>
                 </div>
               </v-col>
@@ -158,7 +169,9 @@ export default {
   data() {
     return {
       slug: this.$route.params.slug,
-      id : this.$route.query.acid
+      id: this.$route.query.acid,
+      searched: ' ',
+
     }
   },
 
@@ -169,7 +182,7 @@ export default {
   },
 
   async asyncData({$axios, params}) {
-    const items = await $axios.$get('http://127.0.0.1:8000/api/accounts')
+    const items = await $axios.$get('http://127.0.0.1:8000/api/account')
     console.log(items);
     return {items}
   },
@@ -181,20 +194,18 @@ export default {
       })
         .then(response => {
           console.log(response)
-          window.alert('follow was success')
-          window.location.href = "http://127.0.0.1:3000/accounts/" + this.slug + "?acid=" + this.id;
+          window.alert('follow')
         }).catch(response => {
-        window.alert('you already follow this account!!')
+        this.unfollowacc(item)
       })
     },
     unfollowacc(item) {
-      this.$axios.delete('http://127.0.0.1:8000/api/unfollow/' +this.id + '/' + item.id)
+      this.$axios.delete('http://127.0.0.1:8000/api/unfollow/' + this.id + '/' + item.id)
         .then(response => {
           console.log(response)
-          window.alert('this account was unfollowed')
-          window.location.href = "http://127.0.0.1:3000/accounts/" + this.slug + "?acid=" + this.id;
+          window.alert('unfollow')
         }).catch(response => {
-        window.alert('you are not follow this account!')
+        this.followacc(item)
       })
     }
 
@@ -204,8 +215,14 @@ export default {
 
 </script>
 <style scoped>
-h3{
+h3 {
   color: #d1155a;
   padding-top: 10px;
+}
+
+div.search {
+  padding: 10px;
+  margin: 10px;
+
 }
 </style>
